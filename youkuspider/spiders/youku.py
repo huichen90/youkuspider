@@ -20,9 +20,9 @@ from youkuspider.items import YoukuspiderItem
 class YoukuSpider(scrapy.Spider):
     name = 'youku'
 
-    def __init__(self, keywords='你好', video_time_long="1000", video_time_short="0", taskId=3,
-                 startDate=int(time.time()) - 3600 * 48,
-                 endDate=int(time.time()), num=5, *args, **kwargs):
+    def __init__(self, keywords='中国好声音', video_time_long="1000", video_time_short="0", taskId=3,
+                 startDate=int(time.time()) - 3600 * 24 * 7,
+                 endDate=int(time.time())+3600, num=5, *args, **kwargs):
         super(YoukuSpider, self).__init__(*args, **kwargs)
         self.keywords = keywords
         self.video_time_long = video_time_long
@@ -84,6 +84,7 @@ class YoukuSpider(scrapy.Spider):
                 url = "http:" + video_url
                 video_time = div.xpath('.//span[@class="pack-rb pack-time"]/text()')[0]
                 play_count = div.xpath('.//div[@class="mod-info"]//text()')[0]
+                upload_time = div.xpath('.//div[@class="mod-info"]//span[@class="spc-lv-4"][1]/text()')[0]
                 pattern = re.compile(r'播放量: (.*?)</span>')
                 play_count = pattern.search(play_count).group(0) if pattern.search(play_count) is not None else 0
                 # 将上面的数据存储到对象中
@@ -99,13 +100,16 @@ class YoukuSpider(scrapy.Spider):
                 item['video_category'] = self.video_category
                 item['start_date'] = self.start_date
                 item['end_date'] = self.end_date
+                item['upload_time'] = self.dts2ts(upload_time)
+                item['info'] = self.info
             except Exception as e:
                 print(e)
 
-            yield scrapy.Request(url=url, callback=self.parse_info, meta={'item': item})
+            yield item
+            # yield scrapy.Request(url=url, callback=self.parse_info, meta={'item': item})
         self.page += 1
 
-        if self.page <= 1:
+        if self.page <= 5:
             # print("开始爬去第%d页" % self.page)
             url = self.url1 + str(self.page)
             time.sleep(5)
@@ -143,14 +147,17 @@ class YoukuSpider(scrapy.Spider):
     def dts2ts(self, datestr):
         """datestring translate to timestamp"""
         import time
-        if len(datestr) == 10:
-            timeArray = time.strptime(datestr, "%Y-%m-%d")
-            timeStamp = int(time.mktime(timeArray))
-            return timeStamp
-        else:
-            timeArray = time.strptime(datestr, "%Y%m%d")
-            timeStamp = int(time.mktime(timeArray))
-            return timeStamp
+        try:
+            if len(datestr) == 10:
+                timeArray = time.strptime(datestr, "%Y-%m-%d")
+                timeStamp = int(time.mktime(timeArray))
+                return timeStamp
+            else:
+                timeArray = time.strptime(datestr, "%Y%m%d")
+                timeStamp = int(time.mktime(timeArray))
+                return timeStamp
+        except Exception as e:
+            return int(time.time())
 
     def close(self, spider):
         # 当爬虫退出的时候 关闭chrome
