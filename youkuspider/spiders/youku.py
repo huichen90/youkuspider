@@ -18,7 +18,7 @@ from youkuspider.items import YoukuspiderItem
 
 
 class YoukuSpider(scrapy.Spider):
-    name = 'youku'
+    name = '关键词采集'
 
     def __init__(self, keywords='中国好声音', video_time_long="1000", video_time_short="0", taskId=3,
                  startDate=int(time.time()) - 3600 * 24 * 7,
