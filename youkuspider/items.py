@@ -12,6 +12,7 @@ class YoukuspiderItem(scrapy.Item):
     # define the fields for your item here like:
     # name = scrapy.Field()
     title = scrapy.Field()
+    title_cn = scrapy.Field()
     keywords = scrapy.Field()
     tags = scrapy.Field()
     upload_time = scrapy.Field()
@@ -21,7 +22,10 @@ class YoukuspiderItem(scrapy.Item):
     video_time = scrapy.Field()
     play_count = scrapy.Field()
     video_category = scrapy.Field()
-    limit_time = scrapy.Field()
+    video_time_long = scrapy.Field()
+    video_time_short = scrapy.Field()
     task_id = scrapy.Field()
     start_date = scrapy.Field()
     end_date = scrapy.Field()
+    language = scrapy.Field()
+
