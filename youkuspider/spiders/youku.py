@@ -60,11 +60,6 @@ class YoukuSpider(scrapy.Spider):
     #                                 charset = self.charset)
     #     self.cursor = self.conn.cursor()
 
-    # 生成随机的字符串
-    # def random_string(self,length=10):
-    #     import random
-    #     base_str = 'abcdefghijklmnopqrstuvwxyz1234567890'
-    #     return ''.join(random.choice(base_str) for i in range(length))
     def parse(self, response):
         # print(response.text)
         res1 = response.xpath('//script[@type="text/javascript"][2]/text()').extract_first()
